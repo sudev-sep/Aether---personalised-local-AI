@@ -1,27 +1,18 @@
-import requests
 from django.conf import settings
+import requests
 
 class OllamaService:
-    def __init__(self):
-        self.base_url = getattr(settings, "OLLAMA_BASE_URL", "http://localhost:11434")
-        self.default_model = getattr(settings, "OLLAMA_MODEL", "llama3.2:3b ") 
-    def generate_response(self, prompt, system_prompt=None):
-        url = f"{self.base_url}/api/generate"
-        
+    def __init__(self, base_url="http://localhost:11434", default_model="llama3.2:3b"):
+        self.base_url = base_url
+        self.default_model = default_model
+
+    def generate_chat_response(self, messages):
+        url = f"{self.base_url}/api/chat"
         payload = {
             "model": self.default_model,
-            "prompt": prompt,
+            "messages": messages,
             "stream": False
         }
-        
-        if system_prompt:
-            payload["system"] = system_prompt
-
-        try:
-            response = requests.post(url, json=payload, timeout=60)
-            response.raise_for_status()
-            data = response.json()
-            return data.get("response", "")
-        except requests.exceptions.RequestException as e:
-            # Fallback or error logging
-            raise Exception(f"Failed to communicate with Ollama: {str(e)}")
+        response = requests.post(url, json=payload, timeout=300)
+        response.raise_for_status()
+        return response.json()["message"]["content"]

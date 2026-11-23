@@ -1,0 +1,140 @@
+<div class="settings-stage">
+  <div class="settings-header">
+    <div class="settings-eyebrow">
+      <span class="dot primary-dot"></span>
+      <span>System Configuration</span>
+    </div>
+    <div class="settings-title-row">
+      <div>
+        <h1>Settings</h1>
+        <p>Manage long-term AI memory, workspace preferences, and local cache.</p>
+      </div>
+      <button type="button" class="btn-secondary" (click)="backToChat.emit()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Back to Chat</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Section 1: Long-Term Memory -->
+  <section class="settings-card">
+    <div class="card-header">
+      <div class="card-badge primary">
+        <span class="material-symbols-outlined">psychology</span>
+      </div>
+      <div>
+        <h2>Long-Term Memory</h2>
+        <p>Facts injected into every new local Llama 3.2 session</p>
+      </div>
+    </div>
+
+    <div class="memory-input-row">
+      <input
+        type="text"
+        [(ngModel)]="newMemoryFact"
+        (keydown.enter)="addMemory()"
+        placeholder="e.g., My name is Sudev, I prefer concise TypeScript examples..." />
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="addMemory()"
+        [disabled]="isSavingMemory || !newMemoryFact.trim()">
+        <span class="material-symbols-outlined">add</span>
+        <span>Add Fact</span>
+      </button>
+    </div>
+
+    <div class="memory-list" *ngIf="memories.length > 0; else emptyMemory">
+      <div class="memory-item" *ngFor="let mem of memories">
+        <span class="memory-text">{{ mem.fact }}</span>
+        <button
+          type="button"
+          class="memory-del-btn"
+          (click)="deleteMemory(mem.id)"
+          title="Delete memory">
+          <span class="material-symbols-outlined">delete_outline</span>
+        </button>
+      </div>
+    </div>
+
+    <ng-template #emptyMemory>
+      <div class="memory-empty">
+        No saved facts yet. Add one above or use <code>/remember</code> in chat.
+      </div>
+    </ng-template>
+  </section>
+
+  <!-- Section 2: General Preferences -->
+  <section class="settings-card">
+    <div class="card-header">
+      <div class="card-badge secondary">
+        <span class="material-symbols-outlined">tune</span>
+      </div>
+      <div>
+        <h2>General Preferences</h2>
+        <p>Workspace identity and interface behavior</p>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Workspace Name</label>
+      <input type="text" [(ngModel)]="workspaceName" />
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-title">Auto-save state</span>
+        <span class="toggle-sub">Persist drafts and sidebar preferences locally</span>
+      </div>
+      <button
+        type="button"
+        class="switch"
+        [class.on]="autoSaveState"
+        (click)="autoSaveState = !autoSaveState"
+        role="switch"
+        [attr.aria-checked]="autoSaveState">
+        <span class="knob"></span>
+      </button>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-title">Compact Density</span>
+        <span class="toggle-sub">Condense spacing across message feeds and sidebars</span>
+      </div>
+      <button
+        type="button"
+        class="switch"
+        [class.on]="compactDensity"
+        (click)="compactDensity = !compactDensity"
+        role="switch"
+        [attr.aria-checked]="compactDensity">
+        <span class="knob"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Section 3: Storage & Cache -->
+  <section class="settings-card">
+    <div class="card-header">
+      <div class="card-badge tertiary">
+        <span class="material-symbols-outlined">database</span>
+      </div>
+      <div>
+        <h2>Storage & Sidebar Cache</h2>
+        <p>Restore conversations hidden from the frontend sidebar</p>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-title">Hidden Sidebar Threads</span>
+        <span class="toggle-sub">Bring back all chats you dismissed with the × button</span>
+      </div>
+      <button type="button" class="btn-secondary" (click)="restoreChats.emit()">
+        <span class="material-symbols-outlined">sync</span>
+        <span>Restore Hidden</span>
+      </button>
+    </div>
+  </section>
+</div>

@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from chat.views import LocalAIQueryView
+from chat.views import LocalAIQueryView, ChatHomeView, ConversationListView, ConversationDetailView, MemoryListCreateView, MemoryDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/chat/', LocalAIQueryView.as_view(), name='local_ai_query'),
+    path('', ChatHomeView.as_view(), name='chat-home'),
+    path('api/conversations/', ConversationListView.as_view(), name='conversation-list'),
+    path('api/conversations/<int:conversation_id>/', ConversationDetailView.as_view(), name='conversation-detail'),
+    path('api/memories/', MemoryListCreateView.as_view(), name='memory-list-create'),
+    path('api/memories/<int:memory_id>/', MemoryDetailView.as_view(), name='memory-detail'),
+    
 ]

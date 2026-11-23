@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local AI Chat (Ollama + Django)</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for rendering AI markdown/code blocks -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold text-indigo-400">🤖 Local AI Assistant (Ollama)</h1>
+        <span id="conv-badge" class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">New Session</span>
+    </header>
+
+    <!-- Chat Container -->
+    <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-4xl w-full mx-auto">
+        <!-- Welcome Message -->
+        <div class="flex items-start space-x-3">
+            <div class="bg-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
+            <div class="bg-gray-800 rounded-lg p-3 max-w-xl text-gray-200 shadow">
+                Hello! I'm running locally via Ollama and Django. How can I help you code or brainstorm today?
+            </div>
+        </div>
+    </main>
+
+    <!-- Input Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 p-4">
+        <form id="chat-form" class="max-w-4xl mx-auto flex gap-3">
+            <input 
+                type="text" 
+                id="user-input" 
+                placeholder="Type your prompt here..." 
+                class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+                autocomplete="off"
+                required
+            >
+            <button 
+                type="submit" 
+                class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-medium transition"
+            >
+                Send
+            </button>
+        </form>
+    </footer>
+
+    <script>
+        let currentConversationId = null;
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const convBadge = document.getElementById('conv-badge');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const promptText = userInput.value.trim();
+            if (!promptText) return;
+
+            // 1. Append User Message to UI
+            appendMessage(promptText, 'user');
+            userInput.value = '';
+
+            // 2. Add loading indicator
+            const loadingId = appendLoadingMessage();
+
+            try {
+                // 3. Call Django Backend
+                const response = await fetch('/api/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: promptText,
+                        conversation_id: currentConversationId
+                    })
+                });
+
+                const data = await response.json();
+                removeLoadingMessage(loadingId);
+
+                if (response.ok) {
+                    currentConversationId = data.conversation_id;
+                    convBadge.textContent = `Session #${currentConversationId}`;
+                    appendMessage(data.response, 'assistant');
+                } else {
+                    appendMessage(`Error: ${data.error || 'Something went wrong.'}`, 'assistant', true);
+                }
+            } catch (err) {
+                removeLoadingMessage(loadingId);
+                appendMessage(`Network Error: Could not connect to Django backend. Is it running?`, 'assistant', true);
+            }
+        });
+
+        function appendMessage(text, sender, isError = false) {
+            const isUser = sender === 'user';
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start space-x-3 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `${isUser ? 'bg-emerald-600' : 'bg-indigo-600'} text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm`;
+            avatar.textContent = isUser ? 'You' : 'AI';
+
+            const bubble = document.createElement('div');
+            bubble.className = `rounded-lg p-3 max-w-2xl shadow ${isUser ? 'bg-emerald-900 text-emerald-100' : 'bg-gray-800 text-gray-200'} ${isError ? 'bg-red-900 text-red-100' : ''}`;
+            
+            if (isUser) {
+                bubble.textContent = text;
+            } else {
+                bubble.innerHTML = marked.parse(text);
+            }
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(bubble);
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendLoadingMessage() {
+            const id = 'loading-' + Date.now();
+            const wrapper = document.createElement('div');
+            wrapper.id = id;
+            wrapper.className = `flex items-start space-x-3`;
+            wrapper.innerHTML = `
+                <div class="bg-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm">AI</div>
+                <div class="bg-gray-800 rounded-lg p-3 text-gray-400 italic shadow animate-pulse">Thinking...</div>
+            `;
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return id;
+        }
+
+        function removeLoadingMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    </script>
+</body>
+</html>
