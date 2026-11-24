@@ -1,0 +1,83 @@
+<div class="about-stage">
+  <div class="about-header">
+    <div class="about-eyebrow">
+      <span class="dot secondary-dot"></span>
+      <span>System Overview</span>
+    </div>
+    <div class="about-title-row">
+      <div>
+        <h1>Aether AI</h1>
+        <p>A private, offline-first AI workspace running entirely on your local machine.</p>
+      </div>
+      <button type="button" class="btn-secondary" (click)="backToChat.emit()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Back to Chat</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Core Philosophy -->
+  <section class="about-card">
+    <div class="card-header">
+      <div class="card-badge primary">
+        <span class="material-symbols-outlined">shield_lock</span>
+      </div>
+      <div>
+        <h2>100% Local & Private</h2>
+        <p>Zero external API calls, zero cloud telemetry</p>
+      </div>
+    </div>
+    <p class="about-copy">
+      Every prompt, conversation thread, and long-term memory fact stays on your hardware.
+      Inference runs locally through Ollama while Django and SQLite manage persistent chat
+      history and cross-session memory injection.
+    </p>
+  </section>
+
+  <!-- Architecture Grid -->
+  <section class="about-card">
+    <div class="card-header">
+      <div class="card-badge secondary">
+        <span class="material-symbols-outlined">hub</span>
+      </div>
+      <div>
+        <h2>System Architecture</h2>
+        <p>Core components powering this workspace</p>
+      </div>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-item" *ngFor="let item of stack">
+        <span class="material-symbols-outlined stack-icon">{{ item.icon }}</span>
+        <div>
+          <span class="stack-label">{{ item.label }}</span>
+          <span class="stack-value">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shortcuts & Commands -->
+  <section class="about-card">
+    <div class="card-header">
+      <div class="card-badge tertiary">
+        <span class="material-symbols-outlined">terminal</span>
+      </div>
+      <div>
+        <h2>Quick Commands</h2>
+        <p>Built-in controls for faster navigation</p>
+      </div>
+    </div>
+
+    <div class="command-list">
+      <div class="command-row">
+        <code>Ctrl + K</code>
+        <span>Start a new conversation</span>
+      </div>
+      <div class="command-row">
+         <code>/remember [fact]</code>
+            <span>Save a persistent fact to long-term memory</span>
+      </div>
+    </div>
+  </section>
+</div>

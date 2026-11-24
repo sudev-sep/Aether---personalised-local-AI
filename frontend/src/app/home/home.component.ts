@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsComponent } from '../settings/settings.component';
+import { AboutComponent } from '../about/about.component';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -32,7 +33,7 @@ interface SuggestionCard {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, SettingsComponent],
+  imports: [CommonModule, FormsModule, SettingsComponent, AboutComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

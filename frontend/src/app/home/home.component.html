@@ -8,7 +8,6 @@
         </div>
         <div class="brand-text">
           <span class="brand-name">Aether AI</span>
-          <span class="brand-sub">Local Nexus</span>
         </div>
       </div>
 
@@ -110,16 +109,12 @@
           <span>Llama 3.2 (3B)</span>
         </button>
 
-        <div class="link-status">
-          <span class="dot primary-dot"></span>
-          <span>Ollama Local Link Active</span>
-        </div>
       </div>
 
       <div class="topbar-right">
         <div class="mode-pill">
           <span class="material-symbols-outlined">satellite_alt</span>
-          <span>Offline Model</span>
+          <!-- <span>Offline Mode</span> -->
         </div>
         <div class="avatar">SA</div>
       </div>
@@ -156,18 +151,24 @@
         </svg>
       </div>
 
-      <!-- Settings Component -->
-      <app-settings
-        *ngIf="activeFooterTab === 'settings'"
-        (backToChat)="activeFooterTab = null"
-        (restoreChats)="restoreHiddenChats()">
-      </app-settings>
+     <!-- Settings Component -->
+<app-settings
+  *ngIf="activeFooterTab === 'settings'"
+  (backToChat)="activeFooterTab = null"
+  (restoreChats)="restoreHiddenChats()">
+</app-settings>
 
-      <!-- Chat Workspace Container -->
-      <div
-        class="stage-inner"
-        *ngIf="activeFooterTab !== 'settings'"
-        [class.has-messages]="messages.length > 0">
+<!-- About Component -->
+<app-about
+  *ngIf="activeFooterTab === 'about'"
+  (backToChat)="activeFooterTab = null">
+</app-about>
+
+<!-- Chat Workspace Container -->
+<div
+  class="stage-inner"
+  *ngIf="activeFooterTab === null"
+  [class.has-messages]="messages.length > 0">
         <!-- Hero State -->
         <section class="hero" *ngIf="messages.length === 0">
           <div class="status-ribbon">
@@ -176,7 +177,7 @@
               <span class="ping-core"></span>
             </span>
             <span class="ribbon-sep">•</span>
-            <span class="ribbon-status">Aether Core Online</span>
+            <span class="ribbon-status">Aether</span>
           </div>
 
           <h1 class="hero-title">Hello, Developer</h1>
